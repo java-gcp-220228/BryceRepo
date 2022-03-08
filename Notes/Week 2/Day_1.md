@@ -6,7 +6,7 @@
 
 <h1>SQL (continued...)</h1>
 
-## **Contraints:**
+## **Constraints:**
 1. **Primary Key** - uniquely identify a record
 2. **Foreign Key** - links to primary key
    - onto-to-one: foreign key in one of the tables, UNIQUE for that foreign key
@@ -36,7 +36,7 @@
 
 Create Table:
 
-```
+```sql
 CREATE TABLE students (
 	id SERIAL PRIMARY KEY,
 	first_name VARCHAR(200) NOT NULL,
@@ -47,7 +47,7 @@ CREATE TABLE students (
 
 Insert Data (Rows):
 
-```
+```sql
 INSERT INTO students (first_name, last_name, age) 
 VALUES 
 ('Bach', 'Tran', 24),
@@ -56,20 +56,20 @@ VALUES
 ```
 
 Select all columns and rows from a table:
-```
+```sql
 SELECT *
 FROM students;
 ```
 
 Drop (remove) a given table:
 
-```
+```sql
 DROP TABLE IF EXISTS students;
 ```
 
 Create a junction table:
 
-```
+```sql
 CREATE TABLE students_teachers (
 	student_id INTEGER NOT NULL,
 	teacher_id INTEGER NOT NULL,
@@ -81,7 +81,7 @@ CREATE TABLE students_teachers (
 
 Join tables from left:
 
-```
+```sql
 SELECT *
 FROM students -- left table
 LEFT JOIN contacts -- right table
@@ -90,7 +90,7 @@ ON students.id = contacts.student_id;
 
 Inner Join:
 
-```
+```sql
 SELECT *
 FROM students -- left table
 INNER JOIN contacts -- right table
@@ -99,7 +99,7 @@ ON students.id = contacts.student_id;
 
 Join tables from right:
 
-```
+```sql
 SELECT *
 FROM students -- left table
 INNER JOIN contacts -- right table
@@ -108,7 +108,7 @@ ON students.id = contacts.student_id;
 
 Multiple joins in one query:
 
-```
+```sql
 SELECT *
 FROM students s
 INNER JOIN students_teachers st 
@@ -119,7 +119,7 @@ ON t.id = st.teacher_id;
 
 Subquerying example:
 
-```
+```sql
 SELECT *
 FROM students
 WHERE age = (
@@ -253,7 +253,7 @@ This can be deleted once the test has resulted in a proper connection
 
 src/main/java/com/revature/utility.java
 
-```
+```java
 // TODO 2: Create a ConnectionUtility class that will contain the getConnection method where our code will belong
 
 public class ConnectionUtility {
@@ -282,7 +282,7 @@ public class ConnectionUtility {
 
 src/main/java/com/revature/main/Driver.java
 
-```
+```java
 package com.revature.main;
 
 import com.revature.dao.StudentDao;
@@ -303,7 +303,7 @@ public class Driver {
 
 
 src/main/java/com/revature/dao/StudentDao.java
-```
+```java
 public class StudentDao {
 
     // TODO 8: Create the methods for the "CRUD" operations
@@ -340,33 +340,28 @@ public class StudentDao {
 
         // TODO 9: Call the getConnection method from ConnectionUtility (which we made)
 
-        try (Connection con = ConnectionUtility.getConnection()) { 
-            // try-with-resources
+        try (Connection con = ConnectionUtility.getConnection()) { //try-with-resources
+
             // TODO 10: Create a (Prepared)Statement object using the Connection object
-
             String sql = "SELECT * FROM students WHERE id = ?";
-
             PreparedStatement pstmt = con.prepareStatement(sql);
 
 
             // TODO 11: If any parameters need to be set, set the parameters (?)
-
             pstmt.setInt(1, id);
 
 
             // TODO 12: Execute the query and retrieve a ResultSet object
-        
             ResultSet rs = pstmt.executeQuery(); // executeQuery() is used with SELECT
 
 
             // TODO 13: Iterate over record(s) using the ResultSet's next() method
-
             if (rs.next()) {
+
                 // TODO 14: Grab the information from the record
 
                 // int studentId = rs.getInt("id"); // not needed due to id already exists
-
-
+                
                 String firstName = rs.getString("first_name");
                 String lastName = rs.getString("last_name");
                 int age = rs.getInt("age");
@@ -452,7 +447,7 @@ public class StudentDao {
 
 src/main/java/com/revature/model/Student.java
 
-```
+```java
 // TODO 7: Create a class that will serve as a model for records in a database table (students table)
 
 public class Student {
