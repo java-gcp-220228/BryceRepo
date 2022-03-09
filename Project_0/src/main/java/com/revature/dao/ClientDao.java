@@ -24,7 +24,7 @@ public class ClientDao {
                             "VALUES (?,?,?,?,?,?,?,?,?,?)";
 
             PreparedStatement pstmt = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            
+
             String firstName = client.getFirstName();
             String lastName = client.getLastName();
             int clientAge = client.getClientAge();
@@ -177,7 +177,6 @@ public class ClientDao {
             pstmt.setLong(9, client.getCreateDate());
 
             client.setUpdateDateToCurrent(); // updates date field
-
             pstmt.setLong(10, client.getUpdateDate());
             pstmt.setString(11, client.getClientId());
 
@@ -189,7 +188,7 @@ public class ClientDao {
 
     // D
     // true if a record was deleted, false if a record was not deleted
-    public boolean deleteClientById(String clientId) throws SQLException {
+    public static boolean deleteClientById(String clientId) throws SQLException {
         try (Connection con = ConnectionUtility.getConnection()) {
             String sql = "DELETE FROM client_data WHERE client_id::text = ?";
 

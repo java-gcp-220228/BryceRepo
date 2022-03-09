@@ -60,6 +60,26 @@ public class ClientService {
         }
     }
 
+    public Boolean deleteClient(String id, Client client) throws SQLException, ClientNotFoundException {
+        try {
+            String clientId = id;
+
+            if (ClientDao.getClientById(clientId) == null) {
+                throw new ClientNotFoundException("User is trying to edit a Client that does not exist. Client with id " + clientId
+                        + " was not found");
+            }
+
+            client.setClientId(clientId);
+            Boolean clientDeleted = ClientDao.deleteClientById(clientId);
+            
+            return clientDeleted;
+
+        } catch(NumberFormatException e) {
+            throw new IllegalArgumentException("ID provided for Client must be a valid UUID");
+        }
+    }
+
+
     public void validateClientInformation(Client client) {
         client.setFirstName(client.getFirstName().trim());
         client.setLastName(client.getLastName().trim());
@@ -82,6 +102,7 @@ public class ClientService {
         validateClientInformation(c);
 
         Client addedClient = clientDao.addClient(c);
+
         return addedClient;
 
     }
