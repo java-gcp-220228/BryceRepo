@@ -66,13 +66,8 @@ Sub-singleton resources
 
 ### Overview:
 
-```mermaid
-graph WF1;
-Database --> Data Access; 
-Data Access ----> Service; 
-Service ---> Controller; 
-Controller ---> Client;
-```
+Database <--> Data Access <--> Service <--> Controller <--> Client
+
 
 ****
 ****
@@ -165,10 +160,5 @@ public class StudentController implements Controller {
 # Mockito
 
 
-::: mermaid
-graph TD;
-    A-->B;
-    A-->C;
-    B-->D;
-    C-->D;
-:::
+
+

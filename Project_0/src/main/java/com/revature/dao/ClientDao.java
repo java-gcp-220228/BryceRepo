@@ -65,7 +65,7 @@ public class ClientDao {
     }
 
     // R
-    public Client getClientById(String clientId) throws SQLException {
+    public static Client getClientById(String clientId) throws SQLException {
         // TODO 9: Call the getConnection method from ConnectionUtility (which we made)
         try (Connection con = ConnectionUtility.getConnection()) { // try-with-resources
             // TODO 10: Create a (Prepared)Statement object using the Connection object
@@ -140,7 +140,7 @@ public class ClientDao {
     }
 
     // U
-    public Client updateClient(Client client) throws SQLException {
+    public static Client updateClient(Client client) throws SQLException {
         try (Connection con = ConnectionUtility.getConnection()) {
             String sql = "UPDATE client_data " +
                     "SET first_name = ?, " +

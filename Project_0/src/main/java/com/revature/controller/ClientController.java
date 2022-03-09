@@ -33,6 +33,15 @@ public class ClientController implements Controller {
         ctx.json(client);
     };
 
+    private Handler addClient = (ctx) -> {
+        Client clientToAdd = ctx.bodyAsClass(Client.class);
+
+        Client c = clientService.addCLient(clientToAdd);
+
+        ctx.status(201);
+        ctx.json(c);
+    };
+
     @Override
     public void mapEndpoints(Javalin app) {
         app.get("/clients", getAllClients);

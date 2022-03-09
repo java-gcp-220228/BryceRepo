@@ -53,19 +53,19 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 DROP TABLE IF EXISTS client_data;
 
 CREATE TABLE client_data (
-    first_name VARCHAR(50),
-    last_name VARCHAR(50),
-    client_age INTEGER,
-    city VARCHAR(50),
-    state VARCHAR(50),
-    account_type VARCHAR(50),
-    balance INTEGER,
-    account_status VARCHAR(5),
-    create_date DATE,
-    update_date DATE,
-    account_id uuid default uuid_generate_v4() NOT NULL,
-    client_id uuid default uuid_generate_v4(),
-	PRIMARY KEY (client_id)
+      first_name VARCHAR(50),
+      last_name VARCHAR(50),
+      client_age INTEGER,
+      city VARCHAR(50),
+      state VARCHAR(50),
+      account_type VARCHAR(50),
+      balance INTEGER,
+      account_status VARCHAR(5),
+      create_date DATE,
+      update_date DATE,
+      account_id uuid default uuid_generate_v4() NOT NULL,
+      client_id uuid default uuid_generate_v4(),
+      PRIMARY KEY (client_id)
 );
 
 INSERT INTO client_data (first_name, last_name, client_age, city, state, account_type, balance, account_status, create_date, update_date)	 
