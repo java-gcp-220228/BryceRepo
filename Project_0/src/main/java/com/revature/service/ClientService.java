@@ -6,6 +6,7 @@ import com.revature.model.Client;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.UUID;
 
 public class ClientService {
 
@@ -23,12 +24,8 @@ public class ClientService {
         return this.clientDao.getAllClients();
     }
 
-    public Client getClientById(String id) throws SQLException, ClientNotFoundException {
+    public Client getClientById(String clientId) throws SQLException, ClientNotFoundException {
         try {
-            int clientId = Integer.parseInt(id); // This could throw an unchecked exception
-            // known as NumberFormatException
-            // Important to take note of this, because any unhandled exceptions will result
-            // in a 500 Internal Server Error (which we should try to avoid)
 
             Client s = clientDao.getClientById(clientId); // this could return null
 

@@ -7,6 +7,7 @@ import io.javalin.Javalin;
 import io.javalin.http.Handler;
 
 import java.util.List;
+import java.util.UUID;
 
 public class ClientController implements Controller {
 

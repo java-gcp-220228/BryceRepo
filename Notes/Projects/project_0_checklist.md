@@ -55,25 +55,27 @@ DROP TABLE IF EXISTS client_data;
 CREATE TABLE client_data (
     first_name VARCHAR(50),
     last_name VARCHAR(50),
+    client_age INTEGER,
+    city VARCHAR(50),
+    state VARCHAR(50),
     account_type VARCHAR(50),
     balance INTEGER,
     account_status VARCHAR(5),
     create_date DATE,
     update_date DATE,
-    account_id uuid default uuid_generate_v4(),
+    account_id uuid default uuid_generate_v4() NOT NULL,
     client_id uuid default uuid_generate_v4(),
 	PRIMARY KEY (client_id)
 );
 
-INSERT INTO client_data (first_name, last_name , account_type, balance, account_status, create_date, update_date)	 
+INSERT INTO client_data (first_name, last_name, client_age, city, state, account_type, balance, account_status, create_date, update_date)	 
 VALUES 
-('Bach', 'Tran', 'check', 10000, 'A', '2022-03-03', '2022-03-10'),
-('John', 'Doe', 'check', 1000, 'B', '2001-01-06', '2020-05-08'),
-('Jane', 'Doe', 'save',  150, 'C', '1990-01-06', '1995-08-10');
+('Bob', 'Smith', 25, 'City1', 'State1', 'check', 10000, 'A', '2022-03-03', '2022-03-10'),
+('John', 'Doe', 32, 'City2', 'State1', 'check', 1000, 'B', '2001-01-06', '2020-05-08'),
+('Jane', 'Doe', 76, 'City3', 'State2', 'save',  150, 'C', '1990-01-06', '1995-08-10');
 
 
 select * from client_data;
-
 ```
 
 
