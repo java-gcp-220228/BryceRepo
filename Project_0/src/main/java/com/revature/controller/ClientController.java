@@ -46,5 +46,6 @@ public class ClientController implements Controller {
     public void mapEndpoints(Javalin app) {
         app.get("/clients", getAllClients);
         app.get("/clients/{clientId}", getClientById);
+        app.post("/clients", addClient);
     }
 }
