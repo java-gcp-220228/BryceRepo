@@ -4,10 +4,7 @@ import com.revature.model.Client;
 import com.revature.utility.ConnectionUtility;
 
 import java.sql.*;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 // TODO 6: Create a Dao (data access object) class for a particular "entity"
@@ -27,7 +24,7 @@ public class ClientDao {
                             "VALUES (?,?,?,?,?,?,?,?,?,?)";
 
             PreparedStatement pstmt = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-
+            
             String firstName = client.getFirstName();
             String lastName = client.getLastName();
             int clientAge = client.getClientAge();
@@ -36,9 +33,16 @@ public class ClientDao {
             String accountType = client.getAccountType();
             Integer balance = client.getBalance();
             String accountStatus = client.getAccountStatus();
-            Date createDate = (Date) client.getCreateDate();
-            Date updateDate = (Date) client.getUpdateDate();
-            String accountId = client.getAccountId();
+
+            client.setCreateDateToCurrent();  // new record needs to have current date
+            Long createDate = client.getCreateDate();
+
+            client.setUpdateDateToCurrent();
+            Long updateDate = client.getUpdateDate();   // update will have the same date as createDate
+
+            // String accountId = client.getAccountId();
+
+            System.out.println("created: " + createDate + " {}}{}{} updated: " + updateDate);
 
             pstmt.setString(1, firstName);
             pstmt.setString(2, lastName);
@@ -48,18 +52,20 @@ public class ClientDao {
             pstmt.setString(6, accountType);
             pstmt.setInt(7, balance);
             pstmt.setString(8, accountStatus);
-            pstmt.setDate(9, createDate);
-            pstmt.setDate(10, updateDate);
+            pstmt.setLong(9, createDate);
+            pstmt.setLong(10, updateDate);
 
             pstmt.executeUpdate();
 
             ResultSet rs = pstmt.getGeneratedKeys();
             rs.next();
-            String generatedClientId = rs.getString(1); // 1st column of the ResultSet
+            String generatedAccountId = rs.getString(1); // 1st column of the ResultSet
+            String generatedClientId = rs.getString(2);
 
-            System.out.println("generated keys:::::: " + generatedClientId);
 
-            return new Client(generatedClientId, accountId, firstName, lastName, clientAge, city, state,
+            System.out.println("client_id: " + generatedClientId + "  ________ account_id: " + generatedAccountId);
+
+            return new Client(generatedClientId, generatedAccountId, firstName, lastName, clientAge, city, state,
                     accountStatus, accountType, balance, createDate, updateDate);
         }
     }
@@ -92,8 +98,8 @@ public class ClientDao {
                 String accountStatus = rs.getString("account_status");
                 String accountType = rs.getString("account_type");
                 int balance = rs.getInt("balance");
-                Date createDate = rs.getDate("create_date");
-                Date updateDate = rs.getDate("update_date");
+                Long createDate = rs.getLong("create_date");
+                Long updateDate = rs.getLong("update_date");
                 String accountId = rs.getString("account_id");
 
                 return new Client(clientId, accountId, firstName, lastName, clientAge, city, state,
@@ -127,8 +133,8 @@ public class ClientDao {
                 String accountStatus = rs.getString("account_status");
                 String accountType = rs.getString("account_type");
                 int balance = rs.getInt("balance");
-                Date createDate = rs.getDate("create_date");
-                Date updateDate = rs.getDate("update_date");
+                Long createDate = rs.getLong("create_date");
+                Long updateDate = rs.getLong("update_date");
 
                 clients.add(new Client(clientId, accountId, firstName, lastName, clientAge, city, state,
                         accountStatus, accountType, balance, createDate, updateDate));
@@ -145,21 +151,20 @@ public class ClientDao {
             String sql = "UPDATE client_data " +
                     "SET first_name = ?, " +
                     "last_name = ?, " +
-                    "client_age = ? " +
+                    "client_age = ?, " +
                     "city = ?, " +
                     "state = ?, " +
                     "account_type = ?, " +
                     "balance = ?, " +
                     "account_status = ?, " +
                     "create_date = ?, " +
-                    "update_date = ?, " +
-                    "WHERE client_id = ?";
+                    "update_date = ?  " +
+                    "WHERE client_id::text = ?";
 
+            System.out.println(sql);
             PreparedStatement pstmt = con.prepareStatement(sql);
 
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            Date today = (Date) Calendar.getInstance().getTime();
-            String currentDate = dateFormat.format(today);
+
 
             pstmt.setString(1, client.getFirstName());
             pstmt.setString(2, client.getLastName());
@@ -169,8 +174,11 @@ public class ClientDao {
             pstmt.setString(6, client.getAccountType());
             pstmt.setInt(7, client.getBalance());
             pstmt.setString(8, client.getAccountStatus());
-            pstmt.setDate(9, (Date) client.getCreateDate());
-            pstmt.setDate(10, Date.valueOf(currentDate));
+            pstmt.setLong(9, client.getCreateDate());
+
+            client.setUpdateDateToCurrent(); // updates date field
+
+            pstmt.setLong(10, client.getUpdateDate());
             pstmt.setString(11, client.getClientId());
 
             pstmt.executeUpdate();
@@ -183,7 +191,7 @@ public class ClientDao {
     // true if a record was deleted, false if a record was not deleted
     public boolean deleteClientById(String clientId) throws SQLException {
         try (Connection con = ConnectionUtility.getConnection()) {
-            String sql = "DELETE FROM client_data WHERE id = ?";
+            String sql = "DELETE FROM client_data WHERE client_id::text = ?";
 
             PreparedStatement pstmt = con.prepareStatement(sql);
 

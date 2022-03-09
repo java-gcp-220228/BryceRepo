@@ -1,8 +1,8 @@
 # Project 0 Checklist
 
-1. - [ ] `POST /clients` 
+1. - [x] `POST /clients` 
         - Creates a new client
-2. - [ ] `GET /clients`
+2. - [x] `GET /clients`
         - Gets all clients
 3. - [ ] `GET /clients/{client_id}`: 
       - Get client with an id of X (if the client exists)
@@ -78,7 +78,25 @@ VALUES
 select * from client_data;
 ```
 
+Empty JSON:
 
+```
+{
+        "clientId": "",
+        "accountId": "",
+        "firstName": "",
+        "lastName": "",
+        "clientAge": 00,
+        "city": "",
+        "state": "",
+        "accountType": "",
+        "balance": 00,
+        "accountStatus": "",
+        "createDate": 1646294400000,
+        "updateDate": 1646899200000
+    }
+
+```
 
 
 

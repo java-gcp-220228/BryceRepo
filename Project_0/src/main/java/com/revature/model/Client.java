@@ -1,6 +1,6 @@
 package com.revature.model;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.Objects;
 
 // TODO 7: Create a class that will serve as a model for records in a database table (clients table)
@@ -16,11 +16,15 @@ public class Client {
     private String accountType;
     private Integer balance;
     private String accountStatus;
-    private Date createDate;
-    private Date updateDate;
+    private Long createDate;
+    private Long updateDate;
+
+    public Client() {
+
+    }
 
     public Client(String clientId, String accountId, String firstName, String lastName, int clientAge, String city, String state,
-                  String accountStatus, String accountType, int balance, Date createDate, Date updateDate) {
+                  String accountStatus, String accountType, int balance, Long createDate, Long updateDate) {
         this.clientId = clientId;
         this.accountId = accountId;
         this.firstName = firstName;
@@ -76,13 +80,13 @@ public class Client {
         return accountStatus;
     }
 
-    public Date getCreateDate() {
+    public Long getCreateDate() {
         return createDate;
-    }
+    };
 
-    public Date getUpdateDate() {
+    public Long getUpdateDate() {
         return updateDate;
-    }
+    };
 
     public void setClientId(String clientId) {
         this.clientId = clientId;
@@ -124,14 +128,25 @@ public class Client {
         this.accountStatus = accountStatus;
     }
 
-    public void setCreateDate(Date createDate) {
-        this.createDate = createDate;
-    }
-
-    public void setUpdateDate(Date updateDate) {
+    public void setUpdateDate(Long updateDate) {
         this.updateDate = updateDate;
     }
 
+    public void setCreateDate(Long createDate) {
+        this.createDate = createDate;
+    }
+
+    public void setUpdateDateToCurrent() {
+        Instant instant = Instant.now();
+        Long currentTime = instant.toEpochMilli();
+        this.updateDate =  currentTime;
+    }
+
+    public void setCreateDateToCurrent() {
+        Instant instant = Instant.now();
+        Long currentTime = instant.toEpochMilli();
+        this.createDate =  currentTime;
+    }
 
 
 
@@ -151,10 +166,19 @@ public class Client {
     @Override
     public String toString() {
         return "Client{" +
-                "id=" + clientId +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", age=" + clientAge +
-                '}';
+                "clientId = " + clientId + "\n" +
+                "accountId = " + accountId +
+                "firstName = " + firstName + "\n" +
+                "lastName = " + lastName + "\n" +
+                "clientAge = " + clientAge  + "\n" +
+                "city = " + city + "\n" +
+                "state = " + state + "\n" +
+                "accountType = " + accountType + "\n" +
+                "balance =  " + balance + "\n" +
+                "accountStatus= " + accountStatus + "\n" +
+                "createDate = " + createDate + "\n" +
+                "updateDate = " + updateDate + "\n" +
+                "}";
     }
+
 }

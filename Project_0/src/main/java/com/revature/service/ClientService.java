@@ -54,6 +54,7 @@ public class ClientService {
             Client editedClient = ClientDao.updateClient(client);
 
             return editedClient;
+
         } catch(NumberFormatException e) {
             throw new IllegalArgumentException("Id provided for Client must be a valid int");
         }
@@ -76,7 +77,7 @@ public class ClientService {
         }
     }
 
-    public Client addCLient(Client c) throws SQLException {
+    public Client addNewClient(Client c) throws SQLException {
 
         validateClientInformation(c);
 
