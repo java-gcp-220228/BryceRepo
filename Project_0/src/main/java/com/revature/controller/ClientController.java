@@ -16,6 +16,7 @@ public class ClientController implements Controller {
 
     public ClientController() {
         this.clientService = new ClientService();
+        this.accountService = new AccountService();
     }
 
     // This lambda will implicitly have "throws Exception" based on the functional interface

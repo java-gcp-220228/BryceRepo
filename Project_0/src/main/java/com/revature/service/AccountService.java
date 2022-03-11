@@ -8,6 +8,7 @@ import com.revature.model.Client;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class AccountService {
@@ -23,8 +24,15 @@ public class AccountService {
     }
 
     public List<Account> getAllClientAccounts(String clientId) throws SQLException, IOException {
-        System.out.println("Service");
-        return this.accountDao.getAllClientAccounts(clientId);
+        try {
+            System.out.println("Service");
+            return this.accountDao.getAllClientAccounts(clientId);
+        } catch (SQLException e) {
+            throw new SQLException("SQL Exception: " + e.getMessage());
+        } catch (IOException e) {
+            throw new IOException("IOException: " + e.getMessage());
+        }
+
     }
 
     public Account getAccountById(String accountId, String clientId) throws SQLException, AccountNotFoundException, FileNotFoundException {
