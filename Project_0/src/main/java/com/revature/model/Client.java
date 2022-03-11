@@ -7,15 +7,11 @@ import java.util.Objects;
 public class Client {
 
     private String clientId;
-    private String accountId;
     private String firstName;
     private String lastName;
     private int clientAge;
     private String city;
     private String state;
-    private String accountType;
-    private Integer balance;
-    private String accountStatus;
     private Long createDate;
     private Long updateDate;
 
@@ -23,18 +19,14 @@ public class Client {
 
     }
 
-    public Client(String clientId, String accountId, String firstName, String lastName, int clientAge, String city, String state,
-                  String accountStatus, String accountType, int balance, Long createDate, Long updateDate) {
+    public Client(String clientId, String firstName, String lastName, int clientAge, String city, String state,
+                  Long createDate, Long updateDate) {
         this.clientId = clientId;
-        this.accountId = accountId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.clientAge = clientAge;
         this.city = city;
         this.state = state;
-        this.accountType = accountType;
-        this.balance = balance;
-        this.accountStatus = accountStatus;
         this.createDate = createDate;
         this.updateDate = updateDate;
     }
@@ -42,10 +34,6 @@ public class Client {
 
     public String getClientId() {
         return clientId;
-    }
-
-    public String getAccountId() {
-        return accountId;
     }
 
     public String getFirstName() {
@@ -68,18 +56,6 @@ public class Client {
         return state;
     }
 
-    public String getAccountType() {
-        return accountType;
-    }
-
-    public Integer getBalance() {
-        return balance;
-    }
-
-    public String getAccountStatus() {
-        return accountStatus;
-    }
-
     public Long getCreateDate() {
         return createDate;
     };
@@ -92,9 +68,7 @@ public class Client {
         this.clientId = clientId;
     }
 
-    public void setAccountId(String accountId) {
-        this.accountId = accountId;
-    }
+
 
     public void setFirstName(String firstName) {
         this.firstName = firstName;
@@ -114,18 +88,6 @@ public class Client {
 
     public void setState(String state) {
         this.state = state;
-    }
-
-    public void setAccountType(String accountType) {
-        this.accountType = accountType;
-    }
-
-    public void setBalance(Integer balance) {
-        this.balance = balance;
-    }
-
-    public void setAccountStatus(String accountStatus) {
-        this.accountStatus = accountStatus;
     }
 
     public void setUpdateDate(Long updateDate) {
@@ -167,15 +129,11 @@ public class Client {
     public String toString() {
         return "Client{" +
                 "clientId = " + clientId + "\n" +
-                "accountId = " + accountId +
                 "firstName = " + firstName + "\n" +
                 "lastName = " + lastName + "\n" +
                 "clientAge = " + clientAge  + "\n" +
                 "city = " + city + "\n" +
                 "state = " + state + "\n" +
-                "accountType = " + accountType + "\n" +
-                "balance =  " + balance + "\n" +
-                "accountStatus= " + accountStatus + "\n" +
                 "createDate = " + createDate + "\n" +
                 "updateDate = " + updateDate + "\n" +
                 "}";

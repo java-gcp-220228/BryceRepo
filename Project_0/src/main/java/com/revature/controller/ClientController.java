@@ -1,17 +1,18 @@
 package com.revature.controller;
-
-import com.revature.exception.ClientNotFoundException;
+import com.revature.model.Account;
 import com.revature.model.Client;
+import com.revature.service.AccountService;
 import com.revature.service.ClientService;
 import io.javalin.Javalin;
 import io.javalin.http.Handler;
 
 import java.util.List;
-import java.util.UUID;
+
 
 public class ClientController implements Controller {
 
     private ClientService clientService;
+    private AccountService accountService;
 
     public ClientController() {
         this.clientService = new ClientService();
@@ -60,6 +61,17 @@ public class ClientController implements Controller {
         ctx.json("Client deleted: " + deletedClient);
     };
 
+    private Handler getAllClientAccounts = (ctx) -> {
+        String c_id = ctx.pathParam("clientId");
+        System.out.println(c_id);
+
+
+        List<Account> accounts = accountService.getAllClientAccounts(c_id);
+
+
+        ctx.json(accounts);
+    };
+
 
     @Override
     public void mapEndpoints(Javalin app) {
@@ -68,5 +80,10 @@ public class ClientController implements Controller {
         app.post("/clients", addClient);
         app.put("/clients/{clientId}", editClient);
         app.delete("/clients/{clientId}", deleteClient);
+        app.get("/clients/{clientId}/accounts", getAllClientAccounts);
+        /*app.get("/clients/{clientId}/accounts/{accountId}", getAccountByClientAccountId);
+        app.post("/clients/{clientId}/accounts", addAccount);
+        app.put("/clients/{clientId}/accounts/{accountId}", editAccount);
+        app.delete("/accounts/{accountId}", deleteAccount);*/
     }
 }

@@ -4,6 +4,8 @@ import com.revature.dao.ClientDao;
 import com.revature.exception.ClientNotFoundException;
 import com.revature.model.Client;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -19,11 +21,11 @@ public class ClientService {
         this.clientDao = mockDao;
     }
 
-    public List<Client> getAllClients() throws SQLException {
+    public List<Client> getAllClients() throws SQLException, IOException {
         return this.clientDao.getAllClients();
     }
 
-    public Client getClientById(String clientId) throws SQLException, ClientNotFoundException {
+    public Client getClientById(String clientId) throws SQLException, ClientNotFoundException, FileNotFoundException {
         try {
 
             Client s = clientDao.getClientById(clientId); // this could return null
@@ -36,10 +38,13 @@ public class ClientService {
 
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("Id provided for client must be a valid int");
-        }
-    }
 
-    public Client editClient(String id, Client client) throws SQLException, ClientNotFoundException {
+        } catch (IOException e) {
+            throw new FileNotFoundException(e.getMessage());
+        }
+    };
+
+    public Client editClient(String id, Client client) throws SQLException, ClientNotFoundException, FileNotFoundException {
         try {
             String clientId = id;
 
@@ -57,10 +62,13 @@ public class ClientService {
 
         } catch(NumberFormatException e) {
             throw new IllegalArgumentException("Id provided for Client must be a valid int");
+        } catch (IOException e) {
+            throw new FileNotFoundException(e.getMessage());
         }
+
     }
 
-    public Boolean deleteClient(String id, Client client) throws SQLException, ClientNotFoundException {
+    public Boolean deleteClient(String id, Client client) throws SQLException, ClientNotFoundException, FileNotFoundException {
         try {
             String clientId = id;
 
@@ -76,6 +84,8 @@ public class ClientService {
 
         } catch(NumberFormatException e) {
             throw new IllegalArgumentException("ID provided for Client must be a valid UUID");
+        } catch (IOException e) {
+            throw new FileNotFoundException(e.getMessage());
         }
     }
 
@@ -97,7 +107,7 @@ public class ClientService {
         }
     }
 
-    public Client addNewClient(Client c) throws SQLException {
+    public Client addNewClient(Client c) throws SQLException, FileNotFoundException {
 
         validateClientInformation(c);
 
