@@ -18,10 +18,10 @@ public class AccountController implements Controller {
 
     // This lambda will implicitly have "throws Exception" based on the functional interface
     // This is something to be aware of, because you might actually want to handle some exceptions
-    private Handler getAllClientAccounts = (ctx) -> {
-        String c_id = ctx.pathParam("clientId");
+    private Handler getAllAccounts = (ctx) -> {
+        //String c_id = ctx.pathParam("clientId");
 
-        List<Account> accounts = accountService.getAllClientAccounts(c_id);
+        List<Account> accounts = accountService.getAllAccounts();
 
 
         ctx.json(accounts);
@@ -31,7 +31,7 @@ public class AccountController implements Controller {
         String a_id = ctx.pathParam("accountId");
         String c_id = ctx.pathParam("clientId");
 
-        Account account = accountService.getAccountById(a_id, c_id);
+        Account account = accountService.getClientAccountById(a_id, c_id);
 
         ctx.json(account);
     };
@@ -48,8 +48,11 @@ public class AccountController implements Controller {
     private Handler editAccount = (ctx) -> {
         Account accountToEdit = ctx.bodyAsClass(Account.class);
 
-        Account editedAccount = accountService.editAccount(ctx.pathParam("accountId"),
-                ctx.pathParam("clientId"), accountToEdit);
+        Account editedAccount = accountService.editAccount(
+                accountToEdit,
+                ctx.pathParam("accountId"),
+                ctx.pathParam("clientId")
+        );
 
         ctx.status(200);
         ctx.json(editedAccount);
@@ -58,20 +61,33 @@ public class AccountController implements Controller {
     private Handler deleteAccount = (ctx) -> {
         Account accountToDelete = ctx.bodyAsClass(Account.class);
 
-        Boolean deletedAccount = accountService.deleteAccount(ctx.pathParam("accountId"), ctx.pathParam("clientId"), accountToDelete);
+        Boolean deletedAccount = accountService.deleteAccount(
+                ctx.pathParam("accountId"),
+                ctx.pathParam("clientId"),
+                accountToDelete
+        );
 
         ctx.status(200);
         ctx.json("Account deleted: " + deletedAccount);
     };
 
+    private Handler getAllClientAccounts = (ctx) -> {
+        String c_id = ctx.pathParam("clientId");
+        System.out.println(c_id);
+
+
+        List<Account> accounts = accountService.getAllClientAccounts(c_id);
+
+
+        ctx.json(accounts);
+    };
+
 
     @Override
     public void mapEndpoints(Javalin app) {
-       /*
         app.get("/accounts", getAllAccounts);
-        app.get("/accounts/{accountId}", getAccountById);
-       */
         app.get("/clients/{clientId}/accounts", getAllClientAccounts);
+        // app.get("/accounts/{accountId}", getAccountById);
         app.get("/clients/{clientId}/accounts/{accountId}", getAccountByClientAccountId);
         app.post("/clients/{clientId}/accounts", addAccount);
         app.put("/clients/{clientId}/accounts/{accountId}", editAccount);

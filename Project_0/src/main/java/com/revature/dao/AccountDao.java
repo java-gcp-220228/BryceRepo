@@ -76,25 +76,31 @@ public class AccountDao {
     }
 
     // R
-    public static Account getAccountById(String accountId, String clientId) throws SQLException, IOException {
-        // TODO 9: Call the getConnection method from ConnectionUtility (which we made)
-        try (Connection con = ConnectionUtility.getConnection()) { // try-with-resources
-            // TODO 10: Create a (Prepared)Statement object using the Connection object
+    public static Account getClientAccountById(String accountId, String clientId) throws SQLException, IOException {
 
-            String sql = "SELECT * FROM account_info WHERE account_id::text = ?";
+        try (Connection con = ConnectionUtility.getConnection()) { // try-with-resources
+
+
+            String sql = "SELECT * " +
+                    "FROM account_info " +
+                    "WHERE account_id IN " +
+                    "( " +
+                    "SELECT account_id FROM all_accounts " +
+                    "WHERE client_id::text = ? " +
+                    "AND account_id::text = ?" +
+                    ");";
 
             PreparedStatement pstmt = con.prepareStatement(sql);
 
-            // TODO 11: If any parameters need to be set, set the parameters (?)
-            pstmt.setString(1, accountId);
 
-            // TODO 12: Execute the query and retrieve a ResultSet object
+            pstmt.setString(1, clientId);
+            pstmt.setString(2, accountId);
+
+
             ResultSet rs = pstmt.executeQuery(); // executeQuery() is used with SELECT
 
-            // TODO 13: Iterate over record(s) using the ResultSet's next() method
-            if (rs.next()) {
-                // TODO 14: Grab the information from the record
 
+            if (rs.next()) {
                 String accountStatus = rs.getString("account_status");
                 String accountType = rs.getString("account_type");
                 int balance = rs.getInt("balance");
@@ -196,5 +202,36 @@ public class AccountDao {
         }
 
         return false;
+    }
+
+    public List<Account> getAllAccounts() throws SQLException, IOException {
+        List<Account> accounts = new ArrayList<>();
+
+        try (Connection con = ConnectionUtility.getConnection()) { // try-with-resources
+
+            String sql = "SELECT * FROM account_info";
+
+            PreparedStatement pstmt = con.prepareStatement(sql);
+
+
+            ResultSet rs = pstmt.executeQuery(); // executeQuery() is used with SELECT
+
+            while (rs.next()) {
+                System.out.println(rs);
+                String accountId = rs.getString("account_id");
+                String accountStatus = rs.getString("account_status");
+                String accountType = rs.getString("account_type");
+                int balance = rs.getInt("balance");
+                Long createDate = rs.getLong("create_date");
+                Long updateDate = rs.getLong("update_date");
+
+                accounts.add(new Account(accountId, accountStatus, accountType, balance, createDate, updateDate));
+            }
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        return accounts;
     }
 }

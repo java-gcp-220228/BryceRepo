@@ -62,17 +62,6 @@ public class ClientController implements Controller {
         ctx.json("Client deleted: " + deletedClient);
     };
 
-    private Handler getAllClientAccounts = (ctx) -> {
-        String c_id = ctx.pathParam("clientId");
-        System.out.println(c_id);
-
-
-        List<Account> accounts = accountService.getAllClientAccounts(c_id);
-
-
-        ctx.json(accounts);
-    };
-
 
     @Override
     public void mapEndpoints(Javalin app) {
@@ -81,7 +70,7 @@ public class ClientController implements Controller {
         app.post("/clients", addClient);
         app.put("/clients/{clientId}", editClient);
         app.delete("/clients/{clientId}", deleteClient);
-        app.get("/clients/{clientId}/accounts", getAllClientAccounts);
+
         /*app.get("/clients/{clientId}/accounts/{accountId}", getAccountByClientAccountId);
         app.post("/clients/{clientId}/accounts", addAccount);
         app.put("/clients/{clientId}/accounts/{accountId}", editAccount);

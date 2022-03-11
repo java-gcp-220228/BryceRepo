@@ -1,5 +1,6 @@
 package com.revature.main;
 
+import com.revature.controller.AccountController;
 import com.revature.controller.Controller;
 import com.revature.controller.ExceptionController;
 import com.revature.controller.ClientController;
@@ -20,7 +21,7 @@ public class Driver {
             logger.info(ctx.method() + " request received for " + ctx.path());
         });
 
-        mapControllers(app, new ClientController(), new ExceptionController());
+        mapControllers(app, new ClientController(), new AccountController(), new ExceptionController());
 
         app.start(); // port 8080 by default
     }

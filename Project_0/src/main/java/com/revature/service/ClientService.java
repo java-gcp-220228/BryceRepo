@@ -37,7 +37,7 @@ public class ClientService {
             return s;
 
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Id provided for client must be a valid int");
+            throw new IllegalArgumentException("Id provided for client must be a valid UUID");
 
         } catch (IOException e) {
             throw new FileNotFoundException(e.getMessage());

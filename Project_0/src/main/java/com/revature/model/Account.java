@@ -26,6 +26,8 @@ public class Account {
         this.updateDate = updateDate;
     }
 
+    public String getAccountId() { return accountId; }
+
     public String getAccountType() {
         return accountType;
     }
