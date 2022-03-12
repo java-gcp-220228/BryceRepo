@@ -8,6 +8,7 @@ import io.javalin.http.ExceptionHandler;
 // using Javalin's exception mapping functionality
 // This ExceptionController provides us with the ability to "map" exceptions in one central location
 // that get thrown from the endpoint handlers themselves
+
 public class ExceptionController implements Controller {
 
     private ExceptionHandler clientNotFound = (e, ctx) -> {

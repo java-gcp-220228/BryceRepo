@@ -5,6 +5,9 @@ import com.revature.service.AccountService;
 import io.javalin.Javalin;
 import io.javalin.http.Handler;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Hashtable;
 import java.util.List;
 
 
@@ -39,10 +42,10 @@ public class AccountController implements Controller {
     private Handler addAccount = (ctx) -> {
         Account accountToAdd = ctx.bodyAsClass(Account.class);
         Client clientToAdd = ctx.bodyAsClass(Client.class);
-        Account c = accountService.addNewAccount(accountToAdd, clientToAdd);
+        Account a = accountService.addNewAccount(accountToAdd, clientToAdd);
 
         ctx.status(201);
-        ctx.json(c);
+        ctx.json(a);
     };
 
     private Handler editAccount = (ctx) -> {
@@ -82,15 +85,25 @@ public class AccountController implements Controller {
         ctx.json(accounts);
     };
 
+    private Handler getAccountsByQuery = (ctx) -> {
+        String c_id = ctx.pathParam("clientId");
+        String filter = ctx.pathParam("filter");
+
+        List<Account> accounts = accountService.getAccountsByQuery(c_id, filter);
+
+
+    };
+
 
     @Override
     public void mapEndpoints(Javalin app) {
-        app.get("/accounts", getAllAccounts);
+        app.get("/accounts", getAllAccounts);  // for dev only, will remove later
         app.get("/clients/{clientId}/accounts", getAllClientAccounts);
-        // app.get("/accounts/{accountId}", getAccountById);
-        app.get("/clients/{clientId}/accounts/{accountId}", getAccountByClientAccountId);
         app.post("/clients/{clientId}/accounts", addAccount);
+        app.get("/clients/{clientId}/accounts/{accountId}", getAccountByClientAccountId);
         app.put("/clients/{clientId}/accounts/{accountId}", editAccount);
-        app.delete("/accounts/{accountId}", deleteAccount);
+        app.delete("/clients/{clientId}/accounts/{accountId}", deleteAccount);
+        app.get("/clients/{clientId}/accounts?<filter>", getAccountsByQuery);
+        // filters = amountLessThan=2000&amountGreaterThan=400
     }
 }

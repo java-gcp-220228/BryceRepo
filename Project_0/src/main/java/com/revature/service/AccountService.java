@@ -9,8 +9,12 @@ import com.revature.model.Client;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.channels.AcceptPendingException;
 import java.sql.SQLException;
+
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Hashtable;
 import java.util.List;
 
 public class AccountService {
@@ -84,7 +88,7 @@ public class AccountService {
             }
 
             if (AccountDao.getClientAccountById(accountId, clientId) == null) {
-                throw new AccountNotFoundException("User is trying to edit a Account that does not exist. Account with id " + accountId
+                throw new AccountNotFoundException("User is trying to edit an Account that does not exist. Account with id " + accountId
                         + " was not found");
             }
 
@@ -112,7 +116,7 @@ public class AccountService {
             }
 
             if (AccountDao.getClientAccountById(accountId, clientId) == null) {
-                throw new AccountNotFoundException("User is trying to edit a Account that does not exist. Account with id " + accountId
+                throw new AccountNotFoundException("User is trying to edit an Account that does not exist. Account with id " + accountId
                         + " was not found");
             }
 
@@ -136,13 +140,58 @@ public class AccountService {
         }
     }
 
-    public Account addNewAccount(Account a, Client c) throws SQLException, FileNotFoundException {
+    public Account addNewAccount(Account a, Client c) throws SQLException, IOException, ClientNotFoundException {
+
+        String clientId = c.getClientId();
 
         validateAccountInformation(a);
+
+        try {
+            if (ClientDao.getClientById(c.getClientId()) == null) {
+                throw new ClientNotFoundException("User is trying to edit a Client that does not exist. Client with id " + clientId
+                        + " was not found");
+            }
+        } catch (SQLException e){
+            throw new SQLException(e.getMessage());
+        } catch (IOException e) {
+            throw new IOException(e.getMessage());
+        }
 
         Account addedAccount = accountDao.addAccount(a, c);
 
         return addedAccount;
 
+    }
+
+    public List<Account> getAccountsByQuery(String clientId, String filter) throws SQLException, IOException, ClientNotFoundException {
+
+        try {
+            if (ClientDao.getClientById(clientId) == null) {
+                throw new ClientNotFoundException("User is trying to edit a Client that does not exist. Client with id " + clientId
+                        + " was not found");
+            }
+        } catch (SQLException e){
+            throw new SQLException(e.getMessage());
+        } catch (IOException e) {
+            throw new IOException(e.getMessage());
+        }
+
+        String[] filterSplit = filter.split("&");
+
+        ArrayList<String> filterList = new ArrayList<>(
+                Arrays.asList(filterSplit));
+
+        Hashtable<String, String> paramMap = new Hashtable<>();
+
+        for (String s : filterList) {
+            String[] param = s.split("=");
+            paramMap.put(param[0], param[1]);
+        }
+
+        System.out.println(paramMap);
+
+        List<Account> returnedAccounts = accountDao.getAccountsByQuery(clientId, paramMap);
+
+        return returnedAccounts;
     }
 }

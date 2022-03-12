@@ -8,6 +8,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 
 // TODO 6: Create a Dao (data access object) class for a particular "entity"
@@ -38,10 +39,6 @@ public class AccountDao {
             account.setUpdateDateToCurrent();
             Long updateDate = account.getUpdateDate();   // update will have the same date as createDate
 
-            // String accountId = account.getAccountId();
-
-            System.out.println("created: " + createDate + " {}}{}{} updated: " + updateDate);
-
             pstmt.setString(1, accountType);
             pstmt.setInt(2, balance);
             pstmt.setString(3, accountStatus);
@@ -53,11 +50,6 @@ public class AccountDao {
             ResultSet rs = pstmt.getGeneratedKeys();
             rs.next();
             String generatedAccountId = rs.getString(1); // 1st column of the ResultSet
-            //String generatedAccountId = rs.getString(2);
-
-
-            System.out.println("account_id: " + generatedAccountId);
-            System.out.println("client_id: " + client.getClientId());
 
             String add_ids = "INSERT INTO all_accounts (account_id, client_id) VALUES (?,?)";
 
@@ -165,16 +157,21 @@ public class AccountDao {
                     "account_status = ?, " +
                     "create_date = ?, " +
                     "update_date = ?  " +
-                    "WHERE account_id::text = ?";
+                    "WHERE account_id::text = ?;";
+
 
             System.out.println(sql);
             PreparedStatement pstmt = con.prepareStatement(sql);
-            pstmt.setString(6, account.getAccountType());
-            pstmt.setInt(7, account.getBalance());
-            pstmt.setString(8, account.getAccountStatus());
-            pstmt.setLong(9, account.getCreateDate());
+
+            pstmt.setString(1, account.getAccountType());
+            pstmt.setInt(2, account.getBalance());
+            pstmt.setString(3, account.getAccountStatus());
+            pstmt.setLong(4, account.getCreateDate());
             account.setUpdateDateToCurrent(); // updates date field
-            pstmt.setLong(10, account.getUpdateDate());
+            pstmt.setLong(5, account.getUpdateDate());
+            pstmt.setString(6, account.getAccountId());
+
+
 
             pstmt.executeUpdate();
         } catch (IOException e) {
@@ -233,5 +230,51 @@ public class AccountDao {
         }
 
         return accounts;
+    }
+
+    public List<Account> getAccountsByQuery(String clientId, Hashtable<String, String> paramMap) {
+        List<Account> accounts = new ArrayList<>();
+
+
+
+
+        try (Connection con = ConnectionUtility.getConnection()) { // try-with-resources
+
+            String sql = "SELECT * " +
+                    "FROM account_info " +
+                    "WHERE account_id IN " +
+                    "(" +
+                    "SELECT account_id FROM all_accounts " +
+                    "WHERE client_id::text = ?" +
+                    ") " +
+                    "AND " +
+                    ";";
+
+            PreparedStatement pstmt = con.prepareStatement(sql);
+
+            pstmt.setString(1, clientId);
+
+
+            ResultSet rs = pstmt.executeQuery(); // executeQuery() is used with SELECT
+
+            while (rs.next()) {
+                System.out.println(rs);
+                String accountId = rs.getString("account_id");
+                String accountStatus = rs.getString("account_status");
+                String accountType = rs.getString("account_type");
+                int balance = rs.getInt("balance");
+                Long createDate = rs.getLong("create_date");
+                Long updateDate = rs.getLong("update_date");
+
+                accounts.add(new Account(accountId, accountStatus, accountType, balance, createDate, updateDate));
+            }
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        return accounts;
+    }
+
     }
 }
