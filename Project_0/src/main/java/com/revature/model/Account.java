@@ -8,7 +8,7 @@ public class Account {
 
     private String accountId;
     private String accountType;
-    private Integer balance;
+    private Double balance;
     private String accountStatus;
     private Long createDate;
     private Long updateDate;
@@ -17,7 +17,7 @@ public class Account {
 
     }
 
-    public Account(String accountId, String accountStatus, String accountType, int balance, Long createDate, Long updateDate) {
+    public Account(String accountId, String accountStatus, String accountType, Double balance, Long createDate, Long updateDate) {
         this.accountId = accountId;
         this.accountType = accountType;
         this.balance = balance;
@@ -32,7 +32,7 @@ public class Account {
         return accountType;
     }
 
-    public Integer getBalance() {
+    public Double getBalance() {
         return balance;
     }
 
@@ -54,7 +54,7 @@ public class Account {
         this.accountType = accountType;
     }
 
-    public void setBalance(Integer balance) {
+    public void setBalance(Double balance) {
         this.balance = balance;
     }
 

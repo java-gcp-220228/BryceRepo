@@ -30,7 +30,7 @@ public class AccountDao {
             PreparedStatement pstmt = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
             String accountType = account.getAccountType();
-            Integer balance = account.getBalance();
+            Double balance = account.getBalance();
             String accountStatus = account.getAccountStatus();
 
             account.setCreateDateToCurrent();  // new record needs to have current date
@@ -40,7 +40,7 @@ public class AccountDao {
             Long updateDate = account.getUpdateDate();   // update will have the same date as createDate
 
             pstmt.setString(1, accountType);
-            pstmt.setInt(2, balance);
+            pstmt.setDouble(2, balance);
             pstmt.setString(3, accountStatus);
             pstmt.setLong(4, createDate);
             pstmt.setLong(5, updateDate);
@@ -95,7 +95,7 @@ public class AccountDao {
             if (rs.next()) {
                 String accountStatus = rs.getString("account_status");
                 String accountType = rs.getString("account_type");
-                int balance = rs.getInt("balance");
+                Double balance = rs.getDouble("balance");
                 Long createDate = rs.getLong("create_date");
                 Long updateDate = rs.getLong("update_date");
 
@@ -136,7 +136,7 @@ public class AccountDao {
                 String accountId = rs.getString("account_id");
                 String accountStatus = rs.getString("account_status");
                 String accountType = rs.getString("account_type");
-                int balance = rs.getInt("balance");
+                Double balance = rs.getDouble("balance");
                 Long createDate = rs.getLong("create_date");
                 Long updateDate = rs.getLong("update_date");
 
@@ -176,7 +176,7 @@ public class AccountDao {
                 String accountId = rs.getString("account_id");
                 String accountStatus = rs.getString("account_status");
                 String accountType = rs.getString("account_type");
-                int balance = rs.getInt("balance");
+                Double balance = rs.getDouble("balance");
                 Long createDate = rs.getLong("create_date");
                 Long updateDate = rs.getLong("update_date");
 
@@ -206,7 +206,7 @@ public class AccountDao {
             PreparedStatement pstmt = con.prepareStatement(sql);
 
             pstmt.setString(1, account.getAccountType());
-            pstmt.setInt(2, account.getBalance());
+            pstmt.setDouble(2, account.getBalance());
             pstmt.setString(3, account.getAccountStatus());
             pstmt.setLong(4, account.getCreateDate());
             account.setUpdateDateToCurrent(); // updates date field
@@ -258,7 +258,7 @@ public class AccountDao {
                 String accountId = rs.getString("account_id");
                 String accountStatus = rs.getString("account_status");
                 String accountType = rs.getString("account_type");
-                int balance = rs.getInt("balance");
+                Double balance = rs.getDouble("balance");
                 Long createDate = rs.getLong("create_date");
                 Long updateDate = rs.getLong("update_date");
 

@@ -12,6 +12,8 @@ import io.javalin.http.ExceptionHandler;
 public class ExceptionController implements Controller {
 
     private ExceptionHandler clientNotFound = (e, ctx) -> {
+        /*logger.warn("User attempted to retrieve a client not in the database.\n" +
+                "Exception message: " + e.getMessage());*/
         ctx.status(404);
         ctx.json(e.getMessage());
     };
