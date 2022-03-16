@@ -17,10 +17,10 @@ public class AccountDao {
     // TODO 8: Create the methods for the "CRUD" operations
 
     // C
-    // Whenever you add a account, no id is associated yet
+    // Whenever you add an account, no id is associated yet
     // The id is automatically generated
     // So what we want to do is retrieve an id and return that with the Account object
-    public Account addAccount(Account account, Client client) throws SQLException, FileNotFoundException {
+    public Account addAccount(Account account, String clientId) throws SQLException, FileNotFoundException {
         try (Connection con = ConnectionUtility.getConnection()) {
 
             String sql = "INSERT INTO " +
@@ -55,15 +55,15 @@ public class AccountDao {
 
             PreparedStatement pstmt2 = con.prepareStatement(add_ids);
 
-            pstmt2.setString(1, generatedAccountId);
-            pstmt2.setString(2, client.getClientId());
+            pstmt2.setObject(1, generatedAccountId, java.sql.Types.OTHER);
+            pstmt2.setObject(2, clientId, java.sql.Types.OTHER);
 
             pstmt2.executeUpdate();
 
             return new Account(generatedAccountId, accountStatus, accountType, balance, createDate, updateDate);
 
         } catch (IOException e) {
-            throw new FileNotFoundException(e.getMessage());
+            throw new FileNotFoundException("File not found: " + e);
         }
     }
 
@@ -107,7 +107,9 @@ public class AccountDao {
         return null;
     }
 
-    public List<Account> getAllClientAccounts(String clientId) throws SQLException, IOException {
+
+
+    public List<Account> getClientAccounts(String clientId) throws SQLException, IOException {
         List<Account> accounts = new ArrayList<>();
 
         System.out.println("Started");
@@ -141,15 +143,55 @@ public class AccountDao {
                 accounts.add(new Account(accountId, accountStatus, accountType, balance, createDate, updateDate));
             }
 
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
         }
 
         return accounts;
     }
 
+    public List<Account> getClientAccounts(String clientId, String greaterThanValue, String lessThanValue ) throws SQLException, IOException {
+        List<Account> accounts = new ArrayList<>();
+
+
+        try (Connection con = ConnectionUtility.getConnection()) { // try-with-resources
+
+            String sql = "SELECT * " +
+                    "FROM account_info " +
+                    "WHERE ((account_info.balance > ? AND account_info.balance < ?) " +
+                    "AND " +
+                    "account_id IN (SELECT account_id FROM all_accounts WHERE client_id::text = ?));";
+
+            PreparedStatement pstmt = con.prepareStatement(sql);
+
+            pstmt.setInt(1, Integer.parseInt(greaterThanValue));
+            pstmt.setInt(2, Integer.parseInt(lessThanValue));
+            pstmt.setString(3, clientId);
+
+
+            System.out.println(pstmt);
+
+            ResultSet rs = pstmt.executeQuery(); // executeQuery() is used with SELECT
+
+            while (rs.next()) {
+                System.out.println(rs);
+                String accountId = rs.getString("account_id");
+                String accountStatus = rs.getString("account_status");
+                String accountType = rs.getString("account_type");
+                int balance = rs.getInt("balance");
+                Long createDate = rs.getLong("create_date");
+                Long updateDate = rs.getLong("update_date");
+
+                accounts.add(new Account(accountId, accountStatus, accountType, balance, createDate, updateDate));
+            }
+
+
+        }
+
+        return accounts;
+    }
+
+
     // U
-    public static Account updateAccount(Account account) throws SQLException {
+    public static Account updateAccount(Account account) throws SQLException, IOException {
         try (Connection con = ConnectionUtility.getConnection()) {
             String sql = "UPDATE account_info " +
                     "SET account_type = ?, " +
@@ -174,8 +216,6 @@ public class AccountDao {
 
 
             pstmt.executeUpdate();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
 
         return account;
@@ -225,56 +265,11 @@ public class AccountDao {
                 accounts.add(new Account(accountId, accountStatus, accountType, balance, createDate, updateDate));
             }
 
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
         }
 
         return accounts;
     }
 
-    public List<Account> getAccountsByQuery(String clientId, Hashtable<String, String> paramMap) {
-        List<Account> accounts = new ArrayList<>();
 
 
-
-
-        try (Connection con = ConnectionUtility.getConnection()) { // try-with-resources
-
-            String sql = "SELECT * " +
-                    "FROM account_info " +
-                    "WHERE account_id IN " +
-                    "(" +
-                    "SELECT account_id FROM all_accounts " +
-                    "WHERE client_id::text = ?" +
-                    ") " +
-                    "AND " +
-                    ";";
-
-            PreparedStatement pstmt = con.prepareStatement(sql);
-
-            pstmt.setString(1, clientId);
-
-
-            ResultSet rs = pstmt.executeQuery(); // executeQuery() is used with SELECT
-
-            while (rs.next()) {
-                System.out.println(rs);
-                String accountId = rs.getString("account_id");
-                String accountStatus = rs.getString("account_status");
-                String accountType = rs.getString("account_type");
-                int balance = rs.getInt("balance");
-                Long createDate = rs.getLong("create_date");
-                Long updateDate = rs.getLong("update_date");
-
-                accounts.add(new Account(accountId, accountStatus, accountType, balance, createDate, updateDate));
-            }
-
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-
-        return accounts;
-    }
-
-    }
 }

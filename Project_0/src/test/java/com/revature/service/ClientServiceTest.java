@@ -3,7 +3,6 @@ package com.revature.service;
 import com.revature.dao.ClientDao;
 import com.revature.exception.ClientNotFoundException;
 import com.revature.model.Client;
-import com.revature.service.ClientService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -74,7 +73,7 @@ public class ClientServiceTest {
 
     // Negative test
     @Test
-    public void test_getClientById_clientDoesNotExist() throws SQLException, ClientNotFoundException {
+    public void test_getClientById_clientDoesNotExist() {
         // Arrange
         ClientDao mockDao = mock(ClientDao.class);
 
@@ -85,7 +84,7 @@ public class ClientServiceTest {
         // The test case will pass if we encounter this exception
         // (ClientNotFoundException)
         Assertions.assertThrows(ClientNotFoundException.class, () -> {
-            clientService.getClientById("10");
+            clientService.getClientById("1");
         });
     }
 
@@ -109,8 +108,10 @@ public class ClientServiceTest {
             Assertions.assertEquals(expectedMessage, actualMessage);
 
         } catch(FileNotFoundException e) {
-            String expectedMessage = "";
+            String expectedMessage = "Property file not found: " + e;
             String actualMessage = e.getMessage();
+
+            Assertions.assertEquals(expectedMessage, actualMessage);
         }
     }
 

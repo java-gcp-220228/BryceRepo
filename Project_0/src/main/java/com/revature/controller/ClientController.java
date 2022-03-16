@@ -54,9 +54,9 @@ public class ClientController implements Controller {
     };
 
     private Handler deleteClient = (ctx) -> {
-        Client clientToDelete = ctx.bodyAsClass(Client.class);
+        // Client clientToDelete = ctx.bodyAsClass(Client.class);
 
-        Boolean deletedClient = clientService.deleteClient(ctx.pathParam("clientId"), clientToDelete);
+        Boolean deletedClient = clientService.deleteClient(ctx.pathParam("clientId"));
 
         ctx.status(200);
         ctx.json("Client deleted: " + deletedClient);

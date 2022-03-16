@@ -5,17 +5,12 @@ import com.revature.dao.ClientDao;
 import com.revature.exception.AccountNotFoundException;
 import com.revature.exception.ClientNotFoundException;
 import com.revature.model.Account;
-import com.revature.model.Client;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.channels.AcceptPendingException;
 import java.sql.SQLException;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Hashtable;
-import java.util.List;
+import java.util.*;
 
 public class AccountService {
 
@@ -34,27 +29,35 @@ public class AccountService {
             System.out.println("Service");
             return this.accountDao.getAllAccounts();
         } catch (SQLException e) {
-            throw new SQLException("SQL Exception: " + e.getMessage());
-        } catch (IOException e) {
-            throw new IOException("IOException: " + e.getMessage());
+            throw new SQLException("SQL Exception: ",  e);
+        } catch (FileNotFoundException e) {
+            throw new FileNotFoundException("Property file not found: " + e);
         }
 
     }
 
-    public List<Account> getAllClientAccounts(String clientId) throws SQLException, IOException {
+    public List<Account> getClientAccounts(String clientId) throws SQLException, IOException {
         try {
             System.out.println("Service");
-            return this.accountDao.getAllClientAccounts(clientId);
-        } catch (SQLException e) {
-            throw new SQLException("SQL Exception: " + e.getMessage());
-        } catch (IOException e) {
-            throw new IOException("IOException: " + e.getMessage());
+            return this.accountDao.getClientAccounts(clientId);
+        } catch (FileNotFoundException e) {
+            throw new FileNotFoundException("Property file not found: " + e);
+        }
+
+    }
+
+    public List<Account> getClientAccounts(String clientId, String lowAmount, String highAmount) throws SQLException, IOException {
+        try {
+            System.out.println("Service");
+            return this.accountDao.getClientAccounts(clientId, lowAmount, highAmount);
+        } catch (FileNotFoundException e) {
+            throw new FileNotFoundException("Property file not found: " + e);
         }
 
     }
 
     public Account getClientAccountById(String accountId, String clientId) throws SQLException,
-            AccountNotFoundException, FileNotFoundException, ClientNotFoundException {
+            AccountNotFoundException, IOException, ClientNotFoundException {
         try {
 
             if (ClientDao.getClientById(clientId) == null) {
@@ -71,15 +74,15 @@ public class AccountService {
             return account;
 
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Id provided for account must be a valid int");
+            throw new IllegalArgumentException("Id provided for account must be a valid int", e);
 
-        } catch (IOException e) {
-            throw new FileNotFoundException("File not found: " + e.getMessage());
+        } catch (FileNotFoundException e) {
+            throw new FileNotFoundException("Property file not found: " + e);
         }
     };
 
     public Account editAccount(Account account, String accountId, String clientId) throws SQLException,
-            AccountNotFoundException, FileNotFoundException, ClientNotFoundException {
+            AccountNotFoundException, IOException, ClientNotFoundException {
         try {
 
             if (ClientDao.getClientById(clientId) == null) {
@@ -93,6 +96,7 @@ public class AccountService {
             }
 
             validateAccountInformation(account);
+            validateAccountId(account);
 
             account.setAccountId(accountId);
             Account editedAccount = AccountDao.updateAccount(account);
@@ -100,15 +104,15 @@ public class AccountService {
             return editedAccount;
 
         } catch(NumberFormatException e) {
-            throw new IllegalArgumentException("Id provided for Account must be a valid int");
-        } catch (IOException e) {
-            throw new FileNotFoundException("File not found: " + e.getMessage());
+            throw new IllegalArgumentException("Id provided for Account must be a valid uuid");
+        } catch (FileNotFoundException e) {
+            throw new FileNotFoundException("Property file not found: " + e);
         }
 
     }
 
-    public Boolean deleteAccount(String accountId, String clientId, Account account) throws SQLException,
-            AccountNotFoundException, FileNotFoundException, ClientNotFoundException {
+    public Boolean deleteAccount(String accountId, String clientId) throws SQLException,
+            AccountNotFoundException, IOException, ClientNotFoundException {
         try {
             if (ClientDao.getClientById(clientId) == null) {
                 throw new ClientNotFoundException("User is trying to edit a Client that does not exist. Client with id " + clientId
@@ -120,78 +124,100 @@ public class AccountService {
                         + " was not found");
             }
 
-            account.setAccountId(accountId);
+            //account.setAccountId(accountId);
             Boolean accountDeleted = AccountDao.deleteAccountById(accountId);
 
             return accountDeleted;
 
         } catch(NumberFormatException e) {
             throw new IllegalArgumentException("ID provided for Account must be a valid UUID");
-        } catch (IOException e) {
-            throw new FileNotFoundException(e.getMessage());
+        } catch (FileNotFoundException e) {
+            throw new FileNotFoundException("Property file not found: " + e);
         }
     }
 
 
-    public void validateAccountInformation(Account account) {
-
-        if (account.getBalance() < 0) {
-            throw new IllegalArgumentException("A negative balance input is invalid. Balance input: " + account.getBalance());
-        }
-    }
-
-    public Account addNewAccount(Account a, Client c) throws SQLException, IOException, ClientNotFoundException {
-
-        String clientId = c.getClientId();
+    public Account addNewAccount(Account a, String clientId) throws SQLException, IOException, ClientNotFoundException {
 
         validateAccountInformation(a);
-
-        try {
-            if (ClientDao.getClientById(c.getClientId()) == null) {
-                throw new ClientNotFoundException("User is trying to edit a Client that does not exist. Client with id " + clientId
-                        + " was not found");
-            }
-        } catch (SQLException e){
-            throw new SQLException(e.getMessage());
-        } catch (IOException e) {
-            throw new IOException(e.getMessage());
-        }
-
-        Account addedAccount = accountDao.addAccount(a, c);
-
-        return addedAccount;
-
-    }
-
-    public List<Account> getAccountsByQuery(String clientId, String filter) throws SQLException, IOException, ClientNotFoundException {
 
         try {
             if (ClientDao.getClientById(clientId) == null) {
                 throw new ClientNotFoundException("User is trying to edit a Client that does not exist. Client with id " + clientId
                         + " was not found");
             }
-        } catch (SQLException e){
-            throw new SQLException(e.getMessage());
-        } catch (IOException e) {
-            throw new IOException(e.getMessage());
+        } catch (FileNotFoundException e) {
+            throw new FileNotFoundException("Property file not found: " + e);
         }
+
+        Account addedAccount = accountDao.addAccount(a, clientId);
+
+        return addedAccount;
+
+    }
+
+ /*   public List<Account> getAccountsByQuery(String clientId, String filter) throws SQLException, IOException, ClientNotFoundException, EndpointQueryException {
+
+        try {
+            if (ClientDao.getClientById(clientId) == null) {
+                throw new ClientNotFoundException("User is trying to edit a Client that does not exist. Client with id " + clientId
+                        + " was not found");
+            }
+            //}
+            *//*catch (FileNotFoundException e) {
+            throw new FileNotFoundException("Property file not found: " + e);
+        }*//*
 
         String[] filterSplit = filter.split("&");
 
         ArrayList<String> filterList = new ArrayList<>(
                 Arrays.asList(filterSplit));
 
-        Hashtable<String, String> paramMap = new Hashtable<>();
+        // Hashtable<String, String> paramMap = new Hashtable<>();
+
+        String s1 = null;
+        String s2 = null;
 
         for (String s : filterList) {
             String[] param = s.split("=");
-            paramMap.put(param[0], param[1]);
+
+            if (param[0].equals("amountLessThan")) {
+                s1 = "balance < " + param[1];
+            }
+            if (param[0].equals("amountGreaterThan")) {
+                s2 = "balance > " + param[1];
+            }
+            // paramMap.put(param[0], param[1]);
         }
 
-        System.out.println(paramMap);
+        if (s1 == null || s2 == null) {
+            throw new EndpointQueryException("Endpoint query only take 'amountLessThan' and 'amountGreaterThan' as parameters. The input: " + filter);
+        }
+        String filterResult = "(WHERE (" + s1 + " AND " + s2 + "));";
 
-        List<Account> returnedAccounts = accountDao.getAccountsByQuery(clientId, paramMap);
 
+        //System.out.println(paramMap);
+
+        List<Account> returnedAccounts = accountDao.getC(clientId, );
+    }
         return returnedAccounts;
+    }*/
+
+
+    public void validateAccountInformation(Account account) {
+        if (account.getBalance() < 0) {
+            throw new IllegalArgumentException("A negative balance input is invalid. Balance input: " + account.getBalance());
+        }
+        if (!Objects.equals(account.getAccountType(), "check") & !Objects.equals(account.getAccountType(), "save")) {
+            throw new IllegalArgumentException("Account type must be either 'check' or 'save'. Account type input: " + account.getAccountType());
+        }
+    }
+    public void validateAccountId(Account account) {
+        account.setAccountId(account.getAccountId().trim());
+
+        if(!account.getAccountId().matches("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")) {
+            throw new IllegalArgumentException("Account ID must be a valid UUID. Account ID input was " + account.getAccountId());
+        }
     }
 }
+

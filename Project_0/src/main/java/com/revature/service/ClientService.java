@@ -28,20 +28,28 @@ public class ClientService {
     public Client getClientById(String clientId) throws SQLException, ClientNotFoundException, FileNotFoundException {
         try {
 
-            Client s = clientDao.getClientById(clientId); // this could return null
+            validateClientId(clientId);
 
-            if (s == null) {
-                throw new ClientNotFoundException("Client with id " + clientId + " was not found");
+            Client c = clientDao.getClientById(clientId); // this could return null
+
+            if (c == null) {
+                throw new ClientNotFoundException("Client with ID " + clientId + " was not found");
             }
 
-            return s;
+
+
+
+            return c;
 
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Id provided for client must be a valid UUID");
+            throw new IllegalArgumentException("ID provided for client must be a valid UUID");
 
         } catch (IOException e) {
-            throw new FileNotFoundException(e.getMessage());
+            throw new FileNotFoundException("Property file not found: " + e);
         }
+        /*catch (SQLException e) {
+            throw new SQLException("Unsupported SQL execution has occurred: ", e);
+        }*/
     };
 
     public Client editClient(String id, Client client) throws SQLException, ClientNotFoundException, FileNotFoundException {
@@ -53,6 +61,7 @@ public class ClientService {
                         + " was not found");
             }
 
+            validateClientId(clientId);
             validateClientInformation(client);
 
             client.setClientId(clientId);
@@ -63,12 +72,14 @@ public class ClientService {
         } catch(NumberFormatException e) {
             throw new IllegalArgumentException("Id provided for Client must be a valid int");
         } catch (IOException e) {
-            throw new FileNotFoundException(e.getMessage());
-        }
+            throw new FileNotFoundException("Property file not found: " + e);
+        }/*catch (SQLException e) {
+            throw new SQLException("Unsupported SQL execution has occurred: ", e);
+        }*/
 
     }
 
-    public Boolean deleteClient(String id, Client client) throws SQLException, ClientNotFoundException, FileNotFoundException {
+    public Boolean deleteClient(String id) throws SQLException, ClientNotFoundException, FileNotFoundException {
         try {
             String clientId = id;
 
@@ -77,7 +88,6 @@ public class ClientService {
                         + " was not found");
             }
 
-            client.setClientId(clientId);
             Boolean clientDeleted = ClientDao.deleteClientById(clientId);
             
             return clientDeleted;
@@ -85,8 +95,19 @@ public class ClientService {
         } catch(NumberFormatException e) {
             throw new IllegalArgumentException("ID provided for Client must be a valid UUID");
         } catch (IOException e) {
-            throw new FileNotFoundException(e.getMessage());
+            throw new FileNotFoundException("Property file not found: " + e);
+        }/*catch (SQLException e) {
+            throw new SQLException("Unsupported SQL execution has occurred: ", e);
+        }*/
+    }
+
+    public void validateClientId(String clientId) {
+        clientId = clientId.trim();
+
+        if(!clientId.matches("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")) {
+            throw new IllegalArgumentException("Client ID must be a valid UUID. Client ID input was " + clientId);
         }
+
     }
 
 

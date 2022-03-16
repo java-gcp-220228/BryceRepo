@@ -5,9 +5,6 @@ import com.revature.service.AccountService;
 import io.javalin.Javalin;
 import io.javalin.http.Handler;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Hashtable;
 import java.util.List;
 
 
@@ -41,8 +38,8 @@ public class AccountController implements Controller {
 
     private Handler addAccount = (ctx) -> {
         Account accountToAdd = ctx.bodyAsClass(Account.class);
-        Client clientToAdd = ctx.bodyAsClass(Client.class);
-        Account a = accountService.addNewAccount(accountToAdd, clientToAdd);
+        String clientId = ctx.pathParam("clientId");
+        Account a = accountService.addNewAccount(accountToAdd, clientId);
 
         ctx.status(201);
         ctx.json(a);
@@ -62,34 +59,36 @@ public class AccountController implements Controller {
     };
 
     private Handler deleteAccount = (ctx) -> {
-        Account accountToDelete = ctx.bodyAsClass(Account.class);
+
+        //Account accountToDelete = ctx.bodyAsClass(Account.class);
 
         Boolean deletedAccount = accountService.deleteAccount(
                 ctx.pathParam("accountId"),
-                ctx.pathParam("clientId"),
-                accountToDelete
+                ctx.pathParam("clientId")
         );
 
         ctx.status(200);
         ctx.json("Account deleted: " + deletedAccount);
     };
 
-    private Handler getAllClientAccounts = (ctx) -> {
+    private Handler getClientAccounts = (ctx) -> {
         String c_id = ctx.pathParam("clientId");
+
         System.out.println(c_id);
+        String lessThanValue = ctx.queryParam("amountLessThan");
+        String greaterThanValue = ctx.queryParam("amountGreaterThan");
+        System.out.println(lessThanValue);
+        System.out.println(greaterThanValue);
 
+        List<Account> accounts;
 
-        List<Account> accounts = accountService.getAllClientAccounts(c_id);
-
-
+        if (lessThanValue == null || greaterThanValue == null) {
+            accounts = accountService.getClientAccounts(c_id);
+        }
+        else {
+            accounts = accountService.getClientAccounts(c_id, greaterThanValue, lessThanValue);
+        }
         ctx.json(accounts);
-    };
-
-    private Handler getAccountsByQuery = (ctx) -> {
-        String c_id = ctx.pathParam("clientId");
-        String filter = ctx.pathParam("filter");
-
-        List<Account> accounts = accountService.getAccountsByQuery(c_id, filter);
 
 
     };
@@ -98,12 +97,12 @@ public class AccountController implements Controller {
     @Override
     public void mapEndpoints(Javalin app) {
         app.get("/accounts", getAllAccounts);  // for dev only, will remove later
-        app.get("/clients/{clientId}/accounts", getAllClientAccounts);
+        app.get("/clients/{clientId}/accounts", getClientAccounts);
         app.post("/clients/{clientId}/accounts", addAccount);
         app.get("/clients/{clientId}/accounts/{accountId}", getAccountByClientAccountId);
         app.put("/clients/{clientId}/accounts/{accountId}", editAccount);
         app.delete("/clients/{clientId}/accounts/{accountId}", deleteAccount);
-        app.get("/clients/{clientId}/accounts?<filter>", getAccountsByQuery);
+
         // filters = amountLessThan=2000&amountGreaterThan=400
     }
 }
